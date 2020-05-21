@@ -1,3 +1,5 @@
+<title> STM32F103C8T6 Blue Pill</title>
+
 <header>
 ## Notes on using STM32F103C8T6 Blue Pill 
 </header>
