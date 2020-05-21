@@ -1,5 +1,7 @@
 # Notes on using STM32F103C8T6 Blue Pill 
 
+## Instruction
+
 An easy way to upload the sketches on the Blue Pill under Arduino IDE is installing an [USB HID Bootloader](https://github.com/stm32duino/wiki/wiki/Upload-methods#hid-bootloader-22-hid-bl) as it's done on the Arduino Boards
 
 To install the Blue Pill STM32_HID_Bootloader go to [https://github.com/Serasidis/STM32_HID_Bootloader](https://github.com/Serasidis/STM32_HID_Bootloader)
