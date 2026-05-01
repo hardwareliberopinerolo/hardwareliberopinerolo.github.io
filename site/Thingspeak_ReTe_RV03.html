@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ThingSpeak 3339165 - 8 grafici</title>
+
+  <!-- Plotly abilita zoom, pan, cursori, tooltip e salvataggio immagine.
+       Richiede connessione Internet per caricare questa libreria CDN. -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0f1117;
+      --panel: #171a23;
+      --panel2: #202431;
+      --text: #e6e8ef;
+      --muted: #9aa3b2;
+      --accent: #6ea8fe;
+      --bad: #ff6b6b;
+      --ok: #7bd88f;
+      --border: #2c3142;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15, 17, 23, 0.96);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+    }
+
+    label {
+      display: grid;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input, select, button {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    input[type="number"] { width: 95px; }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover { border-color: var(--accent); }
+
+    .status {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 13px;
+      min-width: 240px;
+      text-align: right;
+    }
+
+    .status.bad { color: var(--bad); }
+    .status.ok { color: var(--ok); }
+
+    main {
+      padding: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(360px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 280px;
+    }
+
+    .card-head {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .title {
+      font-weight: 650;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .readout {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .chart {
+      height: 245px;
+      width: 100%;
+    }
+
+    .console-card {
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .console-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .console {
+      height: 260px;
+      overflow: auto;
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      background: #0b0d12;
+      color: #d8dee9;
+    }
+
+    .console-line {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 3px 0;
+    }
+
+    .console-time {
+      color: var(--muted);
+      margin-right: 8px;
+    }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 850px) {
+      .grid { grid-template-columns: 1fr; }
+      .status {
+        width: 100%;
+        text-align: left;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>ThingSpeak channel 3339165 — visualizzazione 8 campi</h1>
+
+    <div class="controls">
+      <label>
+	    Channel ID
+       <select id="channelId">
+          <option value="1578204" selected>Frigo Solare 12</option>
+          <option value="3339165">Felicizia</option>
+          <option value="1612407">Conta Persone 14</option>
+          <option value="1612409">Frigo solare Wifi 1267 - Datalogger GSM 3458</option>
+          <option value="1612410">Incubatrice BK1</option>		  
+          <option value="2051259">Pompa vasche pesci</option>
+          <option value="2238954">Frigo BK1</option>		  
+          <option value="2534599">Frigo VLG</option>
+          <option value="2577814">Frigo BK2</option>
+          <option value="2612770">Icubatrice VLG</option>
+        </select>
+
+      </label>
+
+      <label>
+        Campioni
+        <input id="results" type="number" min="1" max="8000" value="8000">
+      </label>
+
+      <label>
+        Aggregazione media
+        <select id="averageMinutes">
+          <option value="0" selected>Nessuna</option>
+          <option value="10">10 min</option>
+          <option value="15">15 min</option>
+          <option value="20">20 min</option>
+          <option value="30">30 min</option>
+          <option value="60">60 min</option>
+          <option value="240">4 ore</option>
+          <option value="720">12 ore</option>
+          <option value="1440">1 giorno</option>
+        </select>
+      </label>
+
+      <label>
+        Auto-refresh
+        <select id="refreshSeconds">
+          <option value="0">Disattivo</option>
+          <option value="15">15 s</option>
+          <option value="30">30 s</option>
+          <option value="60" selected>60 s</option>
+          <option value="300">5 min</option>
+        </select>
+      </label>
+
+      <label>
+        Scala X sincronizzata
+        <select id="syncZoom">
+          <option value="1" selected>Sì</option>
+          <option value="0">No</option>
+        </select>
+      </label>
+
+      <label>
+        Colore sfondo
+        <input id="bgColor" type="color" value="#171a23">
+      </label>
+
+      <label>
+        Colore traccia
+        <input id="traceColor" type="color" value="#6ea8fe">
+      </label>
+
+      <label>
+        Inizio
+        <input id="startDate" type="datetime-local">
+      </label>
+
+      <label>
+        Fine
+        <input id="endDate" type="datetime-local">
+      </label>
+
+      <button id="reloadBtn">Aggiorna</button>
+      <button id="resetZoomBtn">Reset zoom</button>
+
+      <div id="status" class="status">Pronto.</div>
+    </div>
+  </header>
+
+  <main>
+    <div id="grid" class="grid"></div>
+
+    <section class="console-card">
+      <div class="console-head">
+        <div class="title">Console field7 / IO</div>
+        <div id="consoleInfo" class="readout">—</div>
+      </div>
+      <div id="logConsole" class="console">Nessun log caricato.</div>
+    </section>
+
+    <div class="hint">
+      Uso: trascina sul grafico per zoomare; scegli Pan dalla toolbar Plotly per spostarti;
+      doppio click per autorange. Passando col mouse sul punto vedi data/ora e valore.
+      La linea verticale del cursore viene replicata sugli altri grafici.
+      L'aggregazione media usa il parametro ThingSpeak average=N, espresso in minuti.
+      La console sotto i grafici mostra field7 come testo, utile per log/stringhe IO.
+    </div>
+  </main>
+
+<script>
+"use strict";
+
+const FIELD_COUNT = 8;
+
+const grid = document.getElementById("grid");
+const statusEl = document.getElementById("status");
+const channelIdEl = document.getElementById("channelId");
+const resultsEl = document.getElementById("results");
+const averageMinutesEl = document.getElementById("averageMinutes");
+const refreshEl = document.getElementById("refreshSeconds");
+const syncZoomEl = document.getElementById("syncZoom");
+const logConsoleEl = document.getElementById("logConsole");
+const consoleInfoEl = document.getElementById("consoleInfo");
+const bgColorEl = document.getElementById("bgColor");
+const traceColorEl = document.getElementById("traceColor");
+const startDateEl = document.getElementById("startDate");
+const endDateEl = document.getElementById("endDate");
+
+function currentChannelId() {
+  const id = Number(channelIdEl.value);
+  if (!Number.isInteger(id) || id < 1) {
+    throw new Error("Channel ID non valido");
+  }
+  return id;
+}
+
+function currentApiUrl() {
+  return `https://api.thingspeak.com/channels/${currentChannelId()}/feeds.json`;
+}
+
+let refreshTimer = null;
+let fieldNames = Array.from({ length: FIELD_COUNT }, (_, i) => `Field ${i + 1}`);
+let lastData = null;
+let isSyncingRange = false;
+let isSyncingCursor = false;
+
+function setStatus(text, cls = "") {
+  statusEl.textContent = text;
+  statusEl.className = `status ${cls}`;
+}
+
+function ensureCards() {
+  grid.innerHTML = "";
+
+  for (let i = 1; i <= FIELD_COUNT; i++) {
+    const card = document.createElement("section");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="title" id="title${i}">Field ${i}</div>
+        <div class="readout" id="readout${i}">—</div>
+      </div>
+      <div class="chart" id="chart${i}"></div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+function formatDate(d) {
+  if (!d) return "—";
+  return new Intl.DateTimeFormat("it-IT", {
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit"
+  }).format(d);
+}
+
+function numericOrNull(v) {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function nearestPoint(points, xMillis) {
+  let best = null;
+  let bestDist = Infinity;
+
+  for (const p of points) {
+    if (p.y === null) continue;
+    const dist = Math.abs(p.x.getTime() - xMillis);
+    if (dist < bestDist) {
+      best = p;
+      bestDist = dist;
+    }
+  }
+  return best;
+}
+
+function commonLayout(title) {
+  return {
+    title: { text: "", font: { color: "#e6e8ef", size: 13 } },
+    margin: { l: 52, r: 18, t: 16, b: 42 },
+    paper_bgcolor: bgColorEl.value,
+    plot_bgcolor: bgColorEl.value,
+    hovermode: "closest",
+    dragmode: "zoom",
+    xaxis: {
+      type: "date",
+      gridcolor: "#2c3142",
+      zerolinecolor: "#2c3142",
+      color: "#cfd5e3",
+      rangeslider: { visible: false },
+      showspikes: true,
+      spikemode: "across",
+      spikesnap: "cursor",
+      spikecolor: "#cfd5e3",
+      spikethickness: 1
+    },
+    yaxis: {
+      gridcolor: "#2c3142",
+      zerolinecolor: "#2c3142",
+      color: "#cfd5e3",
+      automargin: true
+    },
+    showlegend: false,
+    font: { color: "#e6e8ef" },
+    hoverlabel: {
+      bgcolor: "#202431",
+      bordercolor: "#6ea8fe",
+      font: { color: "#e6e8ef" }
+    },
+    shapes: []
+  };
+}
+
+const config = {
+  responsive: true,
+  scrollZoom: true,
+  displaylogo: false,
+  modeBarButtonsToRemove: ["lasso2d", "select2d"]
+};
+
+async function loadData() {
+  const results = Math.max(1, Math.min(8000, Number(resultsEl.value || 8000)));
+  resultsEl.value = results;
+
+  setStatus("Caricamento dati…");
+
+  const channelId = currentChannelId();
+  document.querySelector("h1").textContent = `ThingSpeak channel ${channelId} — visualizzazione 8 campi`;
+
+  const averageMinutes = Number(averageMinutesEl.value || 0);
+  const params = new URLSearchParams();
+  params.set("results", String(results));
+  if (averageMinutes > 0) {
+    params.set("average", String(averageMinutes));
+  }
+
+  const start = startDateEl.value;
+  const end = endDateEl.value;
+
+  if (start) params.set("start", new Date(start).toISOString());
+  if (end) params.set("end", new Date(end).toISOString());
+
+  const url = `${currentApiUrl()}?${params.toString()}`;
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} da ThingSpeak`);
+  }
+
+  const json = await response.json();
+  if (!json || !Array.isArray(json.feeds)) {
+    throw new Error("Risposta ThingSpeak non valida");
+  }
+
+  lastData = json;
+  const channel = json.channel || {};
+  fieldNames = Array.from({ length: FIELD_COUNT }, (_, idx) =>
+    channel[`field${idx + 1}`] || `Field ${idx + 1}`
+  );
+
+  render(json.feeds);
+  setStatus(`Aggiornato: ${formatDate(new Date())} — ${json.feeds.length} campioni`, "ok");
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function renderLogConsole(feeds) {
+  const lines = feeds
+    .map(row => ({
+      t: new Date(row.created_at),
+      text: row.field7
+    }))
+    .filter(row =>
+      Number.isFinite(row.t.getTime()) &&
+      row.text !== null &&
+      row.text !== undefined &&
+      String(row.text).trim() !== ""
+    );
+
+  if (!lines.length) {
+    logConsoleEl.textContent = "Nessun testo presente in field7.";
+    consoleInfoEl.textContent = "0 righe";
+    return;
+  }
+
+  logConsoleEl.innerHTML = lines.map(row => {
+    return `<div class="console-line"><span class="console-time">${escapeHtml(formatDate(row.t))}</span>${escapeHtml(row.text)}</div>`;
+  }).join("");
+
+  consoleInfoEl.textContent = `${lines.length} righe`;
+  logConsoleEl.scrollTop = logConsoleEl.scrollHeight;
+}
+
+function render(feeds) {
+  renderLogConsole(feeds);
+
+  const parsed = feeds
+    .map(row => ({
+      t: new Date(row.created_at),
+      values: Array.from({ length: FIELD_COUNT }, (_, idx) => numericOrNull(row[`field${idx + 1}`]))
+    }))
+    .filter(row => Number.isFinite(row.t.getTime()));
+
+  for (let field = 1; field <= FIELD_COUNT; field++) {
+    const idx = field - 1;
+    const chartId = `chart${field}`;
+    const readout = document.getElementById(`readout${field}`);
+    const title = document.getElementById(`title${field}`);
+
+    title.textContent = fieldNames[idx];
+
+    const points = parsed.map(row => ({ x: row.t, y: row.values[idx] }));
+    const x = points.map(p => p.x);
+    const y = points.map(p => p.y);
+
+    const lastValid = [...points].reverse().find(p => p.y !== null);
+    readout.textContent = lastValid ? `ultimo: ${lastValid.y} @ ${formatDate(lastValid.x)}` : "nessun dato";
+
+    const trace = {
+      type: "scattergl",
+      mode: "lines+markers",
+      name: fieldNames[idx],
+      x,
+      y,
+      connectgaps: false,
+      line: { width: 1.8, color: traceColorEl.value },
+      marker: { size: 4 },
+      hovertemplate:
+        "%{x|%d/%m/%Y %H:%M:%S}<br>" +
+        `${fieldNames[idx]}: %{y}<extra></extra>`
+    };
+
+    Plotly.react(chartId, [trace], commonLayout(fieldNames[idx]), config);
+    attachHandlers(document.getElementById(chartId), points, field);
+  }
+}
+
+function attachHandlers(chart, points, field) {
+  chart.removeAllListeners?.("plotly_hover");
+  chart.removeAllListeners?.("plotly_unhover");
+  chart.removeAllListeners?.("plotly_relayout");
+
+  chart.on("plotly_hover", ev => {
+    if (!ev.points || !ev.points.length || isSyncingCursor) return;
+    const x = new Date(ev.points[0].x).getTime();
+    syncCursor(x);
+
+    const p = nearestPoint(points, x);
+    const readout = document.getElementById(`readout${field}`);
+    readout.textContent = p ? `${p.y} @ ${formatDate(p.x)}` : "—";
+  });
+
+  chart.on("plotly_unhover", () => {
+    // Mantiene l'ultimo valore letto: utile come "indicatore numerico" stabile.
+  });
+
+  chart.on("plotly_relayout", ev => {
+    if (isSyncingRange || syncZoomEl.value !== "1") return;
+
+    const r0 = ev["xaxis.range[0]"];
+    const r1 = ev["xaxis.range[1]"];
+    const autorange = ev["xaxis.autorange"];
+
+    if (r0 && r1) {
+      syncXRange([r0, r1], chart.id);
+      autorangeVisibleY([r0, r1]);
+    }
+
+    if (autorange) resetAllZoom(chart.id);
+  });
+}
+
+function syncCursor(xMillis) {
+  isSyncingCursor = true;
+
+  const xDate = new Date(xMillis);
+  const update = {
+    shapes: [{
+      type: "line",
+      xref: "x",
+      yref: "paper",
+      x0: xDate,
+      x1: xDate,
+      y0: 0,
+      y1: 1,
+      line: { width: 1, dash: "dot" }
+    }]
+  };
+
+  for (let i = 1; i <= FIELD_COUNT; i++) {
+    Plotly.relayout(`chart${i}`, update);
+  }
+
+  isSyncingCursor = false;
+}
+
+function syncXRange(range, sourceId) {
+  isSyncingRange = true;
+
+  const update = {
+    "xaxis.range[0]": range[0],
+    "xaxis.range[1]": range[1]
+  };
+
+  const promises = [];
+  for (let i = 1; i <= FIELD_COUNT; i++) {
+    const id = `chart${i}`;
+    if (id !== sourceId) promises.push(Plotly.relayout(id, update));
+  }
+
+  Promise.allSettled(promises).finally(() => {
+    isSyncingRange = false;
+  });
+}
+
+function autorangeVisibleY(range) {
+  const start = new Date(range[0]).getTime();
+  const end = new Date(range[1]).getTime();
+
+  if (!Number.isFinite(start) || !Number.isFinite(end)) {
+    return;
+  }
+
+  const xmin = Math.min(start, end);
+  const xmax = Math.max(start, end);
+
+  for (let field = 1; field <= FIELD_COUNT; field++) {
+    const chart = document.getElementById(`chart${field}`);
+    if (!chart || !chart.data || !chart.data[0]) continue;
+
+    const xs = chart.data[0].x || [];
+    const ys = chart.data[0].y || [];
+    const visible = [];
+
+    for (let i = 0; i < xs.length; i++) {
+      const t = new Date(xs[i]).getTime();
+      const y = Number(ys[i]);
+      if (Number.isFinite(t) && t >= xmin && t <= xmax && Number.isFinite(y)) {
+        visible.push(y);
+      }
+    }
+
+    if (visible.length === 0) {
+      Plotly.relayout(chart, { "yaxis.autorange": true });
+      continue;
+    }
+
+    let ymin = Math.min(...visible);
+    let ymax = Math.max(...visible);
+
+    if (ymin === ymax) {
+      const pad = Math.abs(ymin) > 0 ? Math.abs(ymin) * 0.05 : 1;
+      ymin -= pad;
+      ymax += pad;
+    } else {
+      const pad = (ymax - ymin) * 0.08;
+      ymin -= pad;
+      ymax += pad;
+    }
+
+    Plotly.relayout(chart, {
+      "yaxis.range[0]": ymin,
+      "yaxis.range[1]": ymax
+    });
+  }
+}
+
+function resetAllZoom(sourceId = null) {
+  isSyncingRange = true;
+
+  const promises = [];
+  for (let i = 1; i <= FIELD_COUNT; i++) {
+    const id = `chart${i}`;
+    if (id !== sourceId) {
+      promises.push(Plotly.relayout(id, {
+        "xaxis.autorange": true,
+        "yaxis.autorange": true,
+        "shapes": []
+      }));
+    } else {
+      promises.push(Plotly.relayout(id, {
+        "xaxis.autorange": true,
+        "yaxis.autorange": true,
+        "shapes": []
+      }));
+    }
+  }
+
+  Promise.allSettled(promises).finally(() => {
+    isSyncingRange = false;
+  });
+}
+
+function setupRefreshTimer() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+
+  const seconds = Number(refreshEl.value);
+  if (seconds > 0) {
+    refreshTimer = setInterval(() => {
+      loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+    }, seconds * 1000);
+  }
+}
+
+document.getElementById("reloadBtn").addEventListener("click", () => {
+  loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+});
+
+document.getElementById("resetZoomBtn").addEventListener("click", () => resetAllZoom());
+
+refreshEl.addEventListener("change", setupRefreshTimer);
+
+channelIdEl.addEventListener("change", () => {
+  resetAllZoom();
+  loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+});
+
+averageMinutesEl.addEventListener("change", () => {
+  resetAllZoom();
+  loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+});
+
+bgColorEl.addEventListener("change", () => {
+  if (lastData) render(lastData.feeds);
+});
+
+traceColorEl.addEventListener("change", () => {
+  if (lastData) render(lastData.feeds);
+});
+
+startDateEl.addEventListener("change", () => {
+  loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+});
+
+endDateEl.addEventListener("change", () => {
+  loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+});
+
+resultsEl.addEventListener("change", () => {
+  loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+});
+
+ensureCards();
+setupRefreshTimer();
+loadData().catch(err => setStatus(`Errore: ${err.message}`, "bad"));
+</script>
+</body>
+</html>
